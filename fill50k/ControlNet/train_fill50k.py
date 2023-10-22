@@ -1,7 +1,7 @@
 from dataset.Fill50KDataset import Fill50KDataset
 
 import pytorch_lightning as pl
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 from cldm.logger import ImageLogger
 from cldm.model import create_model, load_state_dict
 
@@ -36,7 +36,15 @@ print(txt)
 print(jpg.shape)
 print(hint.shape)
 
-dataloader = DataLoader(dataset, num_workers=0, batch_size=batch_size, shuffle=True)
+# Adding the validation part
+training_portion = 0.8
+training_set, validation_set = random_split(dataset, [int(len(dataset) * training_portion), len(dataset) - int(len(dataset) * training_portion)])
+
+# Dataloader
+dataloader_train = DataLoader(training_set, batch_size=batch_size, shuffle=True, num_workers=4, drop_last=True)
+dataloader_val = DataLoader(validation_set, batch_size=batch_size, num_workers=4, drop_last=True)
+
+
 logger = ImageLogger(batch_frequency=logger_freq)
 
 print('End image logger part')
@@ -57,6 +65,6 @@ print('End pytorch Lightening part')
 print('Start fitting part')
 
 # Train!
-trainer.fit(model, dataloader)
+trainer.fit(model, dataloader_train, dataloader_val)
 
 
