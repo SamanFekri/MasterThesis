@@ -38,8 +38,11 @@ print(jpg.shape)
 print(hint.shape)
 
 # Adding the validation part
-training_portion = 0.8
+training_portion = 1.0
 training_set, validation_set = random_split(dataset, [int(len(dataset) * training_portion), len(dataset) - int(len(dataset) * training_portion)])
+
+print(f'Training set size: {len(training_set)}')
+print(f'Validation set size: {len(validation_set)}')
 
 # Dataloader
 dataloader_train = DataLoader(training_set, batch_size=batch_size, shuffle=True, num_workers=4, drop_last=True)
