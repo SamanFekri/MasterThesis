@@ -5,10 +5,10 @@ from torch.utils.data import DataLoader
 from cldm.logger import ImageLogger
 from cldm.model import create_model, load_state_dict
 
-DATASET_PATH = '../../../dataset/fill50k'
+DATASET_PATH = '../../../../dataset/fill50k'
 
 # Configs
-resume_path = '../models/control_sd15_ini.ckpt'
+resume_path = '../../../models/control_sd15_ini.ckpt'
 batch_size = 1
 logger_freq = 300
 learning_rate = 1e-5
