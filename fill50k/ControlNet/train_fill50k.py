@@ -1,20 +1,27 @@
 from dataset.Fill50KDataset import Fill50KDataset
 
 import pytorch_lightning as pl
-from torch.utils.data import DataLoader, random_split
-from cldm.logger import ImageLogger
+from torch.utils.data import DataLoader
+# from cldm.logger import ImageLogger
+from cldm.wandb_logger import WandbImageLogger
 from cldm.model import create_model, load_state_dict
+# from pytorch_lightning.loggers import WandbLogger
+import wandb
+
 
 DATASET_PATH = '../../../../dataset/fill50k'
 
 # Configs
 resume_path = '../../../models/control_sd15_ini.ckpt'
 batch_size = 1
-logger_freq = 300
+logger_freq = 20
 learning_rate = 1e-5
 sd_locked = True
 only_mid_control = False
-max_epochs = 1
+
+# WanDB config
+# from pytorch_lightning.loggers.wandb import WandbLogger
+# wandb_logger = WandbLogger(project="MNIST", log_model="all")
 
 
 # First use cpu to load models. Pytorch Lightning will automatically move it to GPUs.
@@ -23,6 +30,8 @@ model.load_state_dict(load_state_dict(resume_path, location='cpu'))
 model.learning_rate = learning_rate
 model.sd_locked = sd_locked
 model.only_mid_control = only_mid_control
+
+# wandb_logger.watch(model, log_freq=logger_freq)
 
 print('Start image logger part')
 
@@ -37,19 +46,9 @@ print(txt)
 print(jpg.shape)
 print(hint.shape)
 
-# Adding the validation part
-training_portion = 1.0
-training_set, validation_set = random_split(dataset, [int(len(dataset) * training_portion), len(dataset) - int(len(dataset) * training_portion)])
-
-print(f'Training set size: {len(training_set)}')
-print(f'Validation set size: {len(validation_set)}')
-
-# Dataloader
-dataloader_train = DataLoader(training_set, batch_size=batch_size, shuffle=True, num_workers=4, drop_last=True)
-dataloader_val = DataLoader(validation_set, batch_size=batch_size, num_workers=4, drop_last=True)
-
-
-logger = ImageLogger(batch_frequency=logger_freq)
+dataloader = DataLoader(dataset, num_workers=0, batch_size=batch_size, shuffle=True)
+# logger = ImageLogger(batch_frequency=logger_freq)
+logger = WandbImageLogger(batch_frequency=logger_freq)
 
 print('End image logger part')
 
@@ -60,7 +59,7 @@ print('Start pytorch Lightening part')
 # model.cuda()
 
 # trainer = pl.Trainer(devices=1, precision="bf16-mixed", callbacks=[logger], accumulate_grad_batches=4, accelerator="gpu")  # But this will be 4x slower
-trainer = pl.Trainer(devices=1, callbacks=[logger], accumulate_grad_batches=4, accelerator="gpu", strategy="deepspeed_stage_2_offload", max_epochs=max_epochs) #You might also try this strategy but it needs a python script (not interactive environment)
+trainer = pl.Trainer(devices=1, callbacks=[logger], accumulate_grad_batches=4, accelerator="gpu", strategy="deepspeed_stage_2_offload") #You might also try this strategy but it needs a python script (not interactive environment)
 
 trainer.strategy.config["zero_force_ds_cpu_optimizer"] = False
 
@@ -69,6 +68,9 @@ print('End pytorch Lightening part')
 print('Start fitting part')
 
 # Train!
-trainer.fit(model, dataloader_train, dataloader_val)
+try:
+    trainer.fit(model, dataloader)
+except Exception as e:
+    wandb.finish()
 
 
