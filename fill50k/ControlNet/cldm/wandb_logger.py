@@ -27,7 +27,7 @@ class WandbImageLogger(Callback):
         wandb.init()
 
     @rank_zero_only
-    def log_wandb(self, split, images, global_step, current_epoch, batch_idx):
+    def log_img_wandb(self, split, images, global_step, current_epoch, batch_idx):
         wandb_images = []
         for k in images:
             grid = torchvision.utils.make_grid(images[k], nrow=4)
@@ -41,6 +41,11 @@ class WandbImageLogger(Callback):
 
         # Log the list of wandb.Image objects
         wandb.log({f"{split}_images": wandb_images}, step=global_step)
+    
+    @rank_zero_only
+    def log_loss_wandb(self, split, loss, global_step, current_epoch, batch_idx):
+            wandb.log({f"{split}_loss": loss}, step=global_step)
+        
 
     def log_img(self, pl_module, batch, batch_idx, split="train"):
         check_idx = batch_idx  # if self.log_on_batch_idx else pl_module.global_step
@@ -64,8 +69,18 @@ class WandbImageLogger(Callback):
                     if self.clamp:
                         images[k] = torch.clamp(images[k], -1., 1.)
 
-            self.log_wandb(split, images, pl_module.global_step, pl_module.current_epoch, batch_idx)
+            self.log_img_wandb(split, images, pl_module.global_step, pl_module.current_epoch, batch_idx)
 
+            if is_train:
+                pl_module.train()
+                
+    def log_outputs(self, pl_module, outputs, batch_idx, split="train"):
+        check_idx = batch_idx  # if self.log_on_batch_idx else pl_module.global_step
+        if (self.check_frequency(check_idx)):  # batch_idx % self.batch_freq == 0
+            is_train = pl_module.training
+            
+            self.log_loss_wandb(split, outputs['loss'].item(), pl_module.global_step, pl_module.current_epoch, batch_idx)
+            
             if is_train:
                 pl_module.train()
 
@@ -75,3 +90,4 @@ class WandbImageLogger(Callback):
     def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx):
         if not self.disabled:
             self.log_img(pl_module, batch, batch_idx, split="train")
+            self.log_outputs(pl_module, outputs, batch_idx, split="train")
