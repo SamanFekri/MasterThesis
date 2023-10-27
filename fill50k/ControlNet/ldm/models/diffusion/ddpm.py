@@ -90,6 +90,7 @@ class DDPM(pl.LightningModule):
         self.channels = channels
         self.use_positional_encodings = use_positional_encodings
         self.model = DiffusionWrapper(unet_config, conditioning_key)
+        print(conditioning_key)
         count_params(self.model, verbose=True)
         self.use_ema = use_ema
         if self.use_ema:

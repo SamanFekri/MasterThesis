@@ -20,6 +20,9 @@ from ldm.models.diffusion.ddim import DDIMSampler
 
 
 class ControlledUnetModel(UNetModel):
+    # x is the generated image
+    # context is the text cond
+    # control is the control image
     def forward(self, x, timesteps=None, context=None, control=None, only_mid_control=False, **kwargs):
         hs = []
         with torch.no_grad():
@@ -316,6 +319,8 @@ class ControlLDM(LatentDiffusion):
 
     @torch.no_grad()
     def get_input(self, batch, k, bs=None, *args, **kwargs):
+        # print(k) this is JPG in circle filling
+        # print(bs) is None in circle filling
         x, c = super().get_input(batch, self.first_stage_key, *args, **kwargs)
         control = batch[self.control_key]
         if bs is not None:
