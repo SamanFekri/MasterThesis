@@ -1,7 +1,7 @@
 from dataset.Fill50KDataset import Fill50KDataset
 
 import pytorch_lightning as pl
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 # from cldm.logger import ImageLogger
 from cldm.wandb_logger import WandbImageLogger
 from cldm.model import create_model, load_state_dict
@@ -33,9 +33,17 @@ model.only_mid_control = only_mid_control
 
 print('Start image logger part')
 
-# Misc
+# Create dataset
 dataset = Fill50KDataset(DATASET_PATH)
-print(len(dataset))
+# Split dataset to train and validation
+train_size = int(len(dataset) * (1 - validation_ratio))
+val_size = len(dataset) - train_size
+train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+
+# Show the size of train and validation dataset
+print('Train dataset size:', len(train_dataset))
+print('Validation dataset size:', len(val_dataset))
+
 item = dataset[1234]
 jpg = item['jpg']
 txt = item['txt']
@@ -44,7 +52,10 @@ print(txt)
 print(jpg.shape)
 print(hint.shape)
 
-dataloader = DataLoader(dataset, num_workers=0, batch_size=batch_size, shuffle=True)
+# Create dataloader
+train_dataloader = DataLoader(train_dataset, num_workers=0, batch_size=batch_size, shuffle=True)
+val_dataloader = DataLoader(val_dataset, num_workers=0, batch_size=batch_size, shuffle=True)
+
 # logger = ImageLogger(batch_frequency=logger_freq)
 logger = WandbImageLogger(batch_frequency=logger_freq)
 
@@ -67,7 +78,7 @@ print('Start fitting part')
 
 # Train!
 try:
-    trainer.fit(model, dataloader)
+    trainer.fit(model, train_dataloader, val_dataloader)
 except Exception as e:
     wandb.finish()
 
