@@ -18,10 +18,10 @@ logger_freq = 300
 learning_rate = 1e-5
 sd_locked = True
 only_mid_control = False
+validation_ratio = 0.2
+seed = 42
 
-# WanDB config
-# from pytorch_lightning.loggers.wandb import WandbLogger
-# wandb_logger = WandbLogger(project="MNIST", log_model="all")
+pl.seed_everything(seed, workers=True)
 
 
 # First use cpu to load models. Pytorch Lightning will automatically move it to GPUs.
@@ -30,8 +30,6 @@ model.load_state_dict(load_state_dict(resume_path, location='cpu'))
 model.learning_rate = learning_rate
 model.sd_locked = sd_locked
 model.only_mid_control = only_mid_control
-
-# wandb_logger.watch(model, log_freq=logger_freq)
 
 print('Start image logger part')
 
