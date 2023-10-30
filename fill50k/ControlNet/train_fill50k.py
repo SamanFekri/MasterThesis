@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader, random_split
 # from cldm.logger import ImageLogger
 from cldm.wandb_logger import WandbImageLogger
 from cldm.model import create_model, load_state_dict
+from pytorch_lightning.callbacks import ModelCheckpoint
 # from pytorch_lightning.loggers import WandbLogger
 import wandb
 
@@ -14,12 +15,16 @@ DATASET_PATH = '../../../../dataset/fill50k'
 # Configs
 resume_path = '../../../models/control_sd15_ini.ckpt'
 batch_size = 1
-logger_freq = 300
+logger_freq = 100
 learning_rate = 1e-5
 sd_locked = True
 only_mid_control = False
 validation_ratio = 0.2
 seed = 42
+
+checkpoint_freq = 1000
+checkpoint_dir ='../../../models/checkpoints'
+
 
 pl.seed_everything(seed, workers=True)
 
@@ -30,6 +35,17 @@ model.load_state_dict(load_state_dict(resume_path, location='cpu'))
 model.learning_rate = learning_rate
 model.sd_locked = sd_locked
 model.only_mid_control = only_mid_control
+
+# Config the checkpoint
+checkpoint_callback = ModelCheckpoint(
+    monitor="step",
+    dirpath=checkpoint_dir,
+    save_top_k= 5,
+    every_n_train_steps=checkpoint_freq,
+    filename="fill50k-{epoch:02}-{step:5}",
+    mode="max"
+)
+    
 
 print('Start image logger part')
 
@@ -68,7 +84,7 @@ print('Start pytorch Lightening part')
 # model.cuda()
 
 # trainer = pl.Trainer(devices=1, precision="bf16-mixed", callbacks=[logger], accumulate_grad_batches=4, accelerator="gpu")  # But this will be 4x slower
-trainer = pl.Trainer(devices=1, callbacks=[logger], accumulate_grad_batches=4, accelerator="gpu", strategy="deepspeed_stage_2_offload", max_epochs=1) #You might also try this strategy but it needs a python script (not interactive environment)
+trainer = pl.Trainer(devices=1, callbacks=[logger, checkpoint_callback], accumulate_grad_batches=4, accelerator="gpu", strategy="deepspeed_stage_2_offload", max_epochs=1) #You might also try this strategy but it needs a python script (not interactive environment)
 
 trainer.strategy.config["zero_force_ds_cpu_optimizer"] = False
 
