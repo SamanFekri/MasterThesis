@@ -1370,6 +1370,7 @@ class LatentUpscaleDiffusion(LatentDiffusion):
 
     @torch.no_grad()
     def get_input(self, batch, k, cond_key=None, bs=None, log_mode=False):
+        print("get input @ Latent Diffusion")
         if not log_mode:
             z, c = super().get_input(batch, k, force_c_encode=True, bs=bs)
         else:
