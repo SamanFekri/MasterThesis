@@ -14,7 +14,7 @@ from share import *
 
 import cv2
 import einops
-import gradio as gr
+# import gradio as gr
 import numpy as np
 import torch
 import random
@@ -24,7 +24,7 @@ from pytorch_lightning import seed_everything
 from annotator.util import resize_image, HWC3
 from cldm.model import create_model, load_state_dict
 from cldm.ddim_hacked import DDIMSampler
-from dataset import *
+# from dataset import *
 
 
 A_PROMPT_DEFAULT = "best quality, extremely detailed"

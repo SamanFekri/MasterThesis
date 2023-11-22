@@ -10,7 +10,7 @@ from cldm.model import load_state_dict, create_model
 
 state_dict = load_state_dict(checkpoint_dir)
 
-model = create_model('models/cldm_v15.yaml')
+model = create_model('models/scldm_v15.yaml')
 
 model.load_state_dict(state_dict['module'])
 
