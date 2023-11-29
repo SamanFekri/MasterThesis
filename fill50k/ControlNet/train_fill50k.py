@@ -23,14 +23,14 @@ validation_ratio = 0.2
 seed = 42
 
 checkpoint_freq = 1000
-checkpoint_dir ='../../../models/checkpoints'
+checkpoint_dir ='../../../models/checkpoints/2'
 
 
 pl.seed_everything(seed, workers=True)
 
 
 # First use cpu to load models. Pytorch Lightning will automatically move it to GPUs.
-model = create_model('./models/cldm_v15.yaml').cpu()
+model = create_model('./models/scldm_v15.yaml').cpu()
 model.load_state_dict(load_state_dict(resume_path, location='cpu'))
 model.learning_rate = learning_rate
 model.sd_locked = sd_locked
