@@ -21,6 +21,7 @@ sd_locked = True
 only_mid_control = False
 validation_ratio = 0.02
 seed = 42
+validation_interval = 10000
 
 checkpoint_freq = 10000
 checkpoint_dir ='../../../models/checkpoints/2'
@@ -84,7 +85,7 @@ print('Start pytorch Lightening part')
 # model.cuda()
 
 # trainer = pl.Trainer(devices=1, precision="bf16-mixed", callbacks=[logger], accumulate_grad_batches=4, accelerator="gpu")  # But this will be 4x slower
-trainer = pl.Trainer(devices=1, callbacks=[logger, checkpoint_callback], accumulate_grad_batches=4, accelerator="gpu", strategy="deepspeed_stage_2_offload", max_epochs=1, val_check_interval=10) #You might also try this strategy but it needs a python script (not interactive environment)
+trainer = pl.Trainer(devices=1, callbacks=[logger, checkpoint_callback], accumulate_grad_batches=4, accelerator="gpu", strategy="deepspeed_stage_2_offload", max_epochs=1, val_check_interval=validation_interval) #You might also try this strategy but it needs a python script (not interactive environment)
 
 trainer.strategy.config["zero_force_ds_cpu_optimizer"] = False
 
