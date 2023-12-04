@@ -3,7 +3,7 @@ import os
 import time
 from tqdm import tqdm
 
-input_dir = '.'
+input_dir = '../pix2pix_lite/downloads'
 output_dir = {
     'dir': 'output',
     'source': 'source',
@@ -12,7 +12,7 @@ output_dir = {
 }
 extension = '.parquet'
 # read file in the directory filter it only file with extension
-files = [file for file in os.listdir(input_dir) if file.endswith(extension)]
+files = [file for file in os.listdir(input_dir) if not file.endswith(('.json', '.lock'))]
 
 # make the output directory if it doesn't exist
 if not os.path.exists(output_dir['dir']):
@@ -27,33 +27,42 @@ if not os.path.exists(os.path.join(output_dir['dir'], output_dir['target'])):
 
 # show a progress bar and iterate over the files and update the progress bar with file name
 files_pbar = tqdm(files, desc='Processing Files')
+z = 0
 result = []
 for file in files_pbar:
+    if z == 60:
+        break
+    z += 1
     files_pbar.set_postfix(file=file)
     # read the parquet file
-    df = pd.read_parquet(file)
+    df = pd.read_parquet(f'{input_dir}/{file}')
     # make a progress bar for the rows
     rows_pbar = tqdm(list(df.iterrows()), desc='Processing Rows', leave=False)
     for index, row in rows_pbar:
         # save the bytes and use the path for filename input
-        output_path = os.path.join(output_dir['dir'], output_dir['source'], row['input_image']['path'])
+        output_path = os.path.join(output_dir['dir'], output_dir['source'], row['original_image']['path'])
+
         with open(output_path, 'wb') as f:
-            f.write(row['input_image']['bytes'])
+            f.write(row['original_image']['bytes'])
         # save the bytes and use the path for filename target
         output_path = os.path.join(output_dir['dir'], output_dir['target'], row['edited_image']['path'])
         
         with open(output_path, 'wb') as f:
             f.write(row['edited_image']['bytes'])
         result.append({
-            'source': f"{output_dir['source']}/{row['input_image']['path']}",
+            'source': f"{output_dir['source']}/{row['original_image']['path']}",
             'target': f"{output_dir['target']}/{row['edited_image']['path']}",
             'prompt': row['edit_prompt'],
         })
+    # remove the file after processing
+    os.remove(f'{input_dir}/{file}')
+    
+    # save result as jsonnl in output_dir promot
+    with open(os.path.join(output_dir['dir'], output_dir['prompt']), 'w') as f:
+        for line in result:
+            line = json.dumps(line)
+            f.write(f"{line}\n")
 
-# save result as jsonnl in output_dir promot
-with open(os.path.join(output_dir['dir'], output_dir['prompt']), 'w') as f:
-    for line in result:
-        f.write(f"{line}\n")
 
 
 

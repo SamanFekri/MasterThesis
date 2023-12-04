@@ -11,7 +11,7 @@ class Fill50KDataset(Dataset):
         self.data = []
         self.dataset_path = dataset_path
         with open(f'{dataset_path}/prompt.json', 'rt') as f:
-            for line in f:
+            for i, line in enumerate(f):
                 self.data.append(json.loads(line))
     
     def __len__(self):
