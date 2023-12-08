@@ -57,7 +57,7 @@ class WandbImageLogger(Callback):
             is_train = pl_module.training
             if is_train:
                 pl_module.eval()
-
+            
             with torch.no_grad():
                 images = pl_module.log_images(batch, split=split, **self.log_images_kwargs)
 
@@ -68,9 +68,7 @@ class WandbImageLogger(Callback):
                     images[k] = images[k].detach().cpu()
                     if self.clamp:
                         images[k] = torch.clamp(images[k], -1., 1.)
-
             self.log_img_wandb(split, images, pl_module.global_step, pl_module.current_epoch, batch_idx)
-
             if is_train:
                 pl_module.train()
                 
@@ -78,9 +76,7 @@ class WandbImageLogger(Callback):
         check_idx = batch_idx  # if self.log_on_batch_idx else pl_module.global_step
         if (self.check_frequency(check_idx)):  # batch_idx % self.batch_freq == 0
             is_train = pl_module.training
-            
             self.log_loss_wandb(split, outputs['loss'].item(), pl_module.global_step, pl_module.current_epoch, batch_idx)
-            
             if is_train:
                 pl_module.train()
 
@@ -91,3 +87,10 @@ class WandbImageLogger(Callback):
         if not self.disabled:
             self.log_img(pl_module, batch, batch_idx, split="train")
             self.log_outputs(pl_module, outputs, batch_idx, split="train")
+    
+    def on_validation_batch_end(self, trainer, pl_module, outputs, batch, batch_idx):
+        if outputs is None:
+            return
+        if not self.disabled:
+            self.log_img(pl_module, batch, batch_idx, split="val")
+            self.log_outputs(pl_module, outputs, batch_idx, split="val")

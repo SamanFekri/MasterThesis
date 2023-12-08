@@ -6,7 +6,6 @@ class ExtendedControlLDM(ControlLDM):
         print("I used the Extended Control LDM")
         
     def validation_step(self, batch, batch_idx):
-        print("Validation Step")
         loss_no_ema, loss_dict_no_ema = self.shared_step(batch)
         with self.ema_scope():
             loss_ema, loss_dict_ema = self.shared_step(batch)
@@ -15,5 +14,6 @@ class ExtendedControlLDM(ControlLDM):
         self.log_dict(loss_dict_ema, prog_bar=False, logger=True, on_step=False, on_epoch=True)
         self.log("val_loss_no_ema", loss_no_ema, prog_bar=False, logger=True, on_step=False, on_epoch=True)
         self.log("val_loss_ema", loss_ema, prog_bar=False, logger=True, on_step=False, on_epoch=True)
+        return {"loss": loss_no_ema}
         
         
