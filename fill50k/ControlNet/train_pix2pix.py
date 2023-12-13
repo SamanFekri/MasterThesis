@@ -1,4 +1,4 @@
-from dataset.Fill50KDataset import Fill50KDataset
+from dataset.ControlNetDataset import ControlNetDataset
 
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader, random_split
@@ -16,12 +16,12 @@ DATASET_PATH = '../../../../dataset/pix2pix_lite/output'
 resume_path = '../../../models/control_sd15_ini.ckpt'
 batch_size = 1
 logger_freq = 1000
-learning_rate = 1e-5
+learning_rate = 5 * 1e-5
 sd_locked = True
 only_mid_control = False
-validation_ratio = 0.02
+validation_ratio = 0.002
 seed = 42
-validation_interval = 10000
+validation_interval = 20000
 
 checkpoint_freq = 10000
 checkpoint_dir ='../../../models/checkpoints/2'
@@ -51,7 +51,7 @@ checkpoint_callback = ModelCheckpoint(
 print('Start image logger part')
 
 # Create dataset
-dataset = Fill50KDataset(DATASET_PATH)
+dataset = ControlNetDataset(DATASET_PATH)
 # Split dataset to train and validation
 train_size = int(len(dataset) * (1 - validation_ratio))
 val_size = len(dataset) - train_size
@@ -74,7 +74,7 @@ train_dataloader = DataLoader(train_dataset, num_workers=0, batch_size=batch_siz
 val_dataloader = DataLoader(val_dataset, num_workers=0, batch_size=batch_size, shuffle=True)
 
 # logger = ImageLogger(batch_frequency=logger_freq)
-logger = WandbImageLogger(batch_frequency=logger_freq)
+logger = WandbImageLogger(batch_frequency=logger_freq, project_name="pix2pix_lite")
 
 print('End image logger part')
 
@@ -85,7 +85,7 @@ print('Start pytorch Lightening part')
 # model.cuda()
 
 # trainer = pl.Trainer(devices=1, precision="bf16-mixed", callbacks=[logger], accumulate_grad_batches=4, accelerator="gpu")  # But this will be 4x slower
-trainer = pl.Trainer(devices=1, callbacks=[logger, checkpoint_callback], accumulate_grad_batches=4, accelerator="gpu", strategy="deepspeed_stage_2_offload", max_epochs=1, val_check_interval=validation_interval) #You might also try this strategy but it needs a python script (not interactive environment)
+trainer = pl.Trainer(devices=1, callbacks=[logger, checkpoint_callback], accumulate_grad_batches=4, accelerator="gpu", strategy="deepspeed_stage_2_offload", max_epochs=10000, val_check_interval=validation_interval) #You might also try this strategy but it needs a python script (not interactive environment)
 
 trainer.strategy.config["zero_force_ds_cpu_optimizer"] = False
 
