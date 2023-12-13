@@ -2,17 +2,19 @@ import pandas as pd
 import os
 import time
 from tqdm import tqdm
+import json
 
-input_dir = '../pix2pix_lite/downloads'
+input_dir = '../pix2pix_lite/downlaods'
 output_dir = {
     'dir': 'output',
     'source': 'source',
     'target': 'target',
     'prompt': 'prompt.json',
 }
-extension = '.parquet'
+extension = '.parequet'
 # read file in the directory filter it only file with extension
-files = [file for file in os.listdir(input_dir) if not file.endswith(('.json', '.lock'))]
+print(os.listdir(input_dir))
+files = [file for file in os.listdir(input_dir) if not file.endswith('.json', '.lock')]
 
 # make the output directory if it doesn't exist
 if not os.path.exists(output_dir['dir']):
@@ -30,6 +32,7 @@ files_pbar = tqdm(files, desc='Processing Files')
 z = 0
 result = []
 for file in files_pbar:
+    print(file)
     if z == 60:
         break
     z += 1
@@ -53,6 +56,8 @@ for file in files_pbar:
             'source': f"{output_dir['source']}/{row['original_image']['path']}",
             'target': f"{output_dir['target']}/{row['edited_image']['path']}",
             'prompt': row['edit_prompt'],
+            'original_prompt': row['original_prompt'],
+            'edited_prompt': row['edited_prompt'],
         })
     # remove the file after processing
     os.remove(f'{input_dir}/{file}')
@@ -60,21 +65,6 @@ for file in files_pbar:
     # save result as jsonnl in output_dir promot
     with open(os.path.join(output_dir['dir'], output_dir['prompt']), 'w') as f:
         for line in result:
+            # make sure line when converts to json use " for the key and value not '
             line = json.dumps(line)
             f.write(f"{line}\n")
-
-
-
-
-# df = pd.read_parquet('t1.parquet')
-# print(df.columns)
-
-# print(df['input_image'][0]['bytes'])
-# save the bytes and use the path for filename
-# with open(df['edited_image'][0]['path'], 'wb') as f:
-    # f.write(df['edited_image'][0]['bytes'])
-# read the bytes of the image and convert them to jpg bytes
-# img = Image.frombytes('RGB', df['input_image'][0]['bytes'], 'raw')
-# img.show()
-
-# img.show()
