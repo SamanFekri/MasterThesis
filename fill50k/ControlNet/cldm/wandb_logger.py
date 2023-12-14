@@ -44,7 +44,7 @@ class WandbImageLogger(Callback):
 
         # Log the list of wandb.Image objects
         if split == "val": 
-            wandb.log({f"{split}_images": wandb_images)
+            wandb.log({f"{split}_images": wandb_images})
         else:
             wandb.log({f"{split}_images": wandb_images}, step=global_step)
     
