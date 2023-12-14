@@ -11,7 +11,7 @@ import wandb  # Import Weights & Biases
 class WandbImageLogger(Callback):
     def __init__(self, batch_frequency=2000, max_images=4, clamp=True, increase_log_steps=True,
                  rescale=True, disabled=False, log_on_batch_idx=False, log_first_step=False,
-                 log_images_kwargs=None, project_name: str = ""):
+                 log_images_kwargs=None, project_name: str = "", validation_size : int = 100):
         super().__init__()
         self.rescale = rescale
         self.batch_freq = batch_frequency
@@ -23,6 +23,10 @@ class WandbImageLogger(Callback):
         self.log_on_batch_idx = log_on_batch_idx
         self.log_images_kwargs = log_images_kwargs if log_images_kwargs else {}
         self.log_first_step = log_first_step
+        
+        self.validation_size = validation_size
+        self.validation_log_trigger = validation_size
+        self.validation_images = []
         
         if project_name == "":
             wandb.init()
@@ -41,9 +45,8 @@ class WandbImageLogger(Callback):
             pil_img = Image.fromarray(grid)
             # Convert to wandb.Image format for logging
             wandb_images.append(wandb.Image(pil_img, caption=f"{k}_e-{current_epoch:02}_gs-{global_step:06}_b-{batch_idx:06}"))
-
         # Log the list of wandb.Image objects
-        if split == "val": 
+        if split == "val":
             wandb.log({f"{split}_images": wandb_images})
         else:
             wandb.log({f"{split}_images": wandb_images}, step=global_step)

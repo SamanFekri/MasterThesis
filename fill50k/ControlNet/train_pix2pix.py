@@ -19,9 +19,9 @@ logger_freq = 1000
 learning_rate = 5 * 1e-5
 sd_locked = True
 only_mid_control = False
-validation_ratio = 0.001
+validation_ratio = 0.0002
 seed = 42
-validation_interval = 300000
+validation_interval = 10000
 
 checkpoint_freq = 30000
 checkpoint_dir ='../../../models/checkpoints/'
@@ -74,7 +74,7 @@ train_dataloader = DataLoader(train_dataset, num_workers=0, batch_size=batch_siz
 val_dataloader = DataLoader(val_dataset, num_workers=0, batch_size=batch_size, shuffle=True)
 
 # logger = ImageLogger(batch_frequency=logger_freq)
-logger = WandbImageLogger(batch_frequency=logger_freq, project_name="pix2pix_lite")
+logger = WandbImageLogger(batch_frequency=logger_freq, project_name="pix2pix_lite", validation_size=len(val_dataset))
 
 print('End image logger part')
 
