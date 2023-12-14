@@ -40,19 +40,22 @@ class WandbImageLogger(Callback):
             grid = (grid * 255).astype(np.uint8)
             pil_img = Image.fromarray(grid)
             # Convert to wandb.Image format for logging
-            wandb_images.append(wandb.Image(pil_img, caption=f"{k}_gs-{global_step:06}_e-{current_epoch:06}_b-{batch_idx:06}"))
+            wandb_images.append(wandb.Image(pil_img, caption=f"{k}_e-{current_epoch:02}_gs-{global_step:06}_b-{batch_idx:06}"))
 
         # Log the list of wandb.Image objects
-        wandb.log({f"{split}_images": wandb_images}, step=global_step)
+        if split == "val": 
+            wandb.log({f"{split}_images": wandb_images)
+        else:
+            wandb.log({f"{split}_images": wandb_images}, step=global_step)
     
     @rank_zero_only
     def log_loss_wandb(self, split, loss, global_step, current_epoch, batch_idx):
-            wandb.log({f"{split}_loss": loss}, step=global_step)
+        wandb.log({f"{split}_loss": loss}, step=global_step)
         
 
     def log_img(self, pl_module, batch, batch_idx, split="train"):
         check_idx = batch_idx  # if self.log_on_batch_idx else pl_module.global_step
-        if (self.check_frequency(check_idx) and  # batch_idx % self.batch_freq == 0
+        if ((self.check_frequency(check_idx) or split == "val") and  # batch_idx % self.batch_freq == 0
                 hasattr(pl_module, "log_images") and
                 callable(pl_module.log_images) and
                 self.max_images > 0):

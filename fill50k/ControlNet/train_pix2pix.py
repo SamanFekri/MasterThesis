@@ -19,12 +19,12 @@ logger_freq = 1000
 learning_rate = 5 * 1e-5
 sd_locked = True
 only_mid_control = False
-validation_ratio = 0.002
+validation_ratio = 0.001
 seed = 42
-validation_interval = 20000
+validation_interval = 300000
 
-checkpoint_freq = 10000
-checkpoint_dir ='../../../models/checkpoints/2'
+checkpoint_freq = 30000
+checkpoint_dir ='../../../models/checkpoints/'
 
 
 pl.seed_everything(seed, workers=True)
@@ -39,12 +39,12 @@ model.only_mid_control = only_mid_control
 
 # Config the checkpoint
 checkpoint_callback = ModelCheckpoint(
-    monitor="step",
+    monitor="val_loss",
     dirpath=checkpoint_dir,
     save_top_k= 1,
     every_n_train_steps=checkpoint_freq,
-    filename="pix2pix-{epoch:02}-{step:5}",
-    mode="max"
+    filename="pix2pix-{epoch:02}-{step:5}-{val_loss:5}",
+    mode="min"
 )
     
 
