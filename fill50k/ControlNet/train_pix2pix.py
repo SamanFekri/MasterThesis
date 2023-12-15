@@ -15,7 +15,7 @@ DATASET_PATH = '../../../../dataset/pix2pix_lite/output'
 # Configs
 resume_path = '../../../models/control_sd15_ini.ckpt'
 batch_size = 1
-logger_freq = 1000
+logger_freq = 10000
 learning_rate = 5 * 1e-5
 sd_locked = True
 only_mid_control = False
@@ -24,7 +24,7 @@ seed = 42
 validation_interval = 10000
 
 checkpoint_freq = 30000
-checkpoint_dir ='../../../models/checkpoints/'
+checkpoint_dir ='../../../models/checkpoints'
 
 
 pl.seed_everything(seed, workers=True)
@@ -38,12 +38,12 @@ model.sd_locked = sd_locked
 model.only_mid_control = only_mid_control
 
 # Config the checkpoint
-checkpoint_callback = ModelCheckpoint(
-    monitor="val_loss",
+checkpoint_cb = ModelCheckpoint(
+    monitor="train/loss_simple",
     dirpath=checkpoint_dir,
     save_top_k= 1,
     every_n_train_steps=checkpoint_freq,
-    filename="pix2pix-{epoch:02}-{step:5}-{val_loss:5}",
+    filename="pix2pix-{epoch:02}-{step:05}",
     mode="min"
 )
     
@@ -51,7 +51,7 @@ checkpoint_callback = ModelCheckpoint(
 print('Start image logger part')
 
 # Create dataset
-dataset = ControlNetDataset(DATASET_PATH)
+dataset = ControlNetDataset(DATASET_PATH, backward=True)
 # Split dataset to train and validation
 train_size = int(len(dataset) * (1 - validation_ratio))
 val_size = len(dataset) - train_size
@@ -85,7 +85,7 @@ print('Start pytorch Lightening part')
 # model.cuda()
 
 # trainer = pl.Trainer(devices=1, precision="bf16-mixed", callbacks=[logger], accumulate_grad_batches=4, accelerator="gpu")  # But this will be 4x slower
-trainer = pl.Trainer(devices=1, callbacks=[logger, checkpoint_callback], accumulate_grad_batches=4, accelerator="gpu", strategy="deepspeed_stage_2_offload", max_epochs=10000, val_check_interval=validation_interval) #You might also try this strategy but it needs a python script (not interactive environment)
+trainer = pl.Trainer(devices=1, callbacks=[logger, checkpoint_cb], accumulate_grad_batches=4, accelerator="gpu", strategy="deepspeed_stage_2_offload", max_epochs=10000, val_check_interval=validation_interval) #You might also try this strategy but it needs a python script (not interactive environment)
 
 trainer.strategy.config["zero_force_ds_cpu_optimizer"] = False
 

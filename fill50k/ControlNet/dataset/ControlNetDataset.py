@@ -40,7 +40,12 @@ class ControlNetDataset(Dataset):
 
         source_filename = item[self.source]
         target_filename = item[self.target]
+        # Allow the thing do it backward
+        if self.backward:
+            source_filename, target_filename = target_filename, source_filename
+            
         prompt = item[self.prompt]
+
 
         source = cv2.imread(f'{self.dataset_path}/{source_filename}')
         target = cv2.imread(f'{self.dataset_path}/{target_filename}')
@@ -55,8 +60,5 @@ class ControlNetDataset(Dataset):
         # Normalize target images to [-1, 1].
         target = (target.astype(np.float32) / 127.5) - 1.0
 
-        # If backward is True, then we need to swap source and target.
-        if self.backward:
-            return dict(jpg=source, txt=prompt, hint=target)
         return dict(jpg=target, txt=prompt, hint=source)
     
