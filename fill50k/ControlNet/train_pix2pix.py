@@ -15,7 +15,7 @@ DATASET_PATH = '../../../../dataset/pix2pix_lite/output'
 # Configs
 resume_path = '../../../models/control_sd15_ini.ckpt'
 batch_size = 1
-logger_freq = 10000
+logger_freq = 1000
 learning_rate = 5 * 1e-5
 sd_locked = True
 only_mid_control = False
@@ -23,7 +23,7 @@ validation_ratio = 0.0002
 seed = 42
 validation_interval = 10000
 
-checkpoint_freq = 30000
+checkpoint_freq = 1000
 checkpoint_dir ='../../../models/checkpoints'
 
 

@@ -49,11 +49,11 @@ class WandbImageLogger(Callback):
         if split == "val":
             wandb.log({f"{split}_images": wandb_images})
         else:
-            wandb.log({f"{split}_images": wandb_images}, step=global_step)
+            wandb.log({f"{split}_images": wandb_images})
     
     @rank_zero_only
     def log_loss_wandb(self, split, loss, global_step, current_epoch, batch_idx):
-        wandb.log({f"{split}_loss": loss}, step=global_step)
+        wandb.log({f"{split}_loss": loss})
         
 
     def log_img(self, pl_module, batch, batch_idx, split="train"):
