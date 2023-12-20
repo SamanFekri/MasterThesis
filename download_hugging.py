@@ -1,3 +1,6 @@
 from datasets import load_dataset
+from dotenv import dotenv_values
 
-dataset = load_dataset("timbrooks/instructpix2pix-clip-filtered", cache_dir="../pix2pix_lite")
+config = dotenv_values(".env")
+
+dataset = load_dataset("timbrooks/instructpix2pix-clip-filtered", cache_dir=config['DATASET_PATH_RAW'])
