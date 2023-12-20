@@ -3,10 +3,13 @@ import os
 import time
 from tqdm import tqdm
 import json
+from dotenv import dotenv_values
 
-input_dir = '../pix2pix_lite/downlaods'
+config = dotenv_values(".env")
+
+input_dir = os.path.join(config['DATASET_PATH_RAW'], 'downloads')
 output_dir = {
-    'dir': 'output',
+    'dir': config['DATASET_PATH_PROCESSED'],
     'source': 'source',
     'target': 'target',
     'prompt': 'prompt.json',
@@ -29,13 +32,13 @@ if not os.path.exists(os.path.join(output_dir['dir'], output_dir['target'])):
 
 # show a progress bar and iterate over the files and update the progress bar with file name
 files_pbar = tqdm(files, desc='Processing Files')
-z = 0
+# z = 0
 result = []
 for file in files_pbar:
     print(file)
-    if z == 60:
-        break
-    z += 1
+    # if z == 60:
+    #     break
+    # z += 1
     files_pbar.set_postfix(file=file)
     # read the parquet file
     df = pd.read_parquet(f'{input_dir}/{file}')
