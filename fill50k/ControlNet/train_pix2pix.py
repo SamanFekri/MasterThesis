@@ -9,11 +9,14 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 # from pytorch_lightning.loggers import WandbLogger
 import wandb
 
+from dotenv import dotenv_values
+config = dotenv_values("../../.env")
 
-DATASET_PATH = '../../../../dataset/pix2pix_lite/output'
+
+DATASET_PATH = f"../../{config['DATASET_PATH_PROCESSED']}"
 
 # Configs
-resume_path = '../../../models/control_sd15_ini.ckpt'
+resume_path = f"../../{config['MODEL_CONTROL_NET_PATH']}"
 batch_size = 1
 logger_freq = 1000
 learning_rate = 5 * 1e-5
@@ -24,7 +27,7 @@ seed = 42
 validation_interval = 10000
 
 checkpoint_freq = 1000
-checkpoint_dir ='../../../models/checkpoints'
+checkpoint_dir =f"../../{config['CHECKPOINT_PATH']}"
 
 
 pl.seed_everything(seed, workers=True)
