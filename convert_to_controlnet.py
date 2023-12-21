@@ -17,7 +17,7 @@ output_dir = {
 extension = '.parequet'
 # read file in the directory filter it only file with extension
 print(os.listdir(input_dir))
-files = [file for file in os.listdir(input_dir) if not file.endswith('.json', '.lock')]
+files = [file for file in os.listdir(input_dir) if not file.endswith(('.json', '.lock'))]
 
 # make the output directory if it doesn't exist
 if not os.path.exists(output_dir['dir']):
