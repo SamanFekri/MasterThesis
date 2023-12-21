@@ -35,7 +35,7 @@ files_pbar = tqdm(files, desc='Processing Files')
 # z = 0
 result = []
 for file in files_pbar:
-    print(file)
+    # print(file)
     # if z == 60:
     #     break
     # z += 1
