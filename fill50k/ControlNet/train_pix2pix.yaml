@@ -1,3 +1,6 @@
+wandb:
+  project: 'pix2pix_lite'
+
 dataset:
   path_processed: '../../../dataset/pix2pix_clipped'
   validation_ratio: 0.0002
@@ -9,11 +12,25 @@ model:
   sd_locked: true
   only_mid_control: false
 
+checkpoint:
+  path: '../../../checkpoints'
+  frequency: 1000
+  monitor: 'train/loss_simple'
+  mode: 'min'
+  filename: 'pix2pix-{epoch:02}-{step:05}'
+  save_top_k: 1
+
 training:
   batch_size: 1
   logger_freq: 1000
   seed: 42
-  validation_interval: 10000
+
+trainer:
+  device: 1
+  accumulate_grad_batches: 4
+  accelerator: 'gpu'
+  use_deepspeed: false
   max_epochs: 10000
-  checkpoint_freq: 1000
-  checkpoint_dir: '../../../checkpoints'
+  validation_interval: 10000
+  strategy: 'auto' # deepspeed_stage_2_offload
+

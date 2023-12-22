@@ -23,10 +23,6 @@ sd_locked = config['model']['sd_locked']
 only_mid_control = config['model']['only_mid_control']
 validation_ratio = config['dataset']['validation_ratio']
 seed = config['training']['seed']
-validation_interval = config['training']['validation_interval']
-max_epochs = config['training']['max_epochs']
-checkpoint_freq = config['training']['checkpoint_freq']
-checkpoint_dir = config['training']['checkpoint_dir']
 
 pl.seed_everything(seed, workers=True)
 
@@ -39,12 +35,12 @@ model.only_mid_control = only_mid_control
 
 # Checkpoint configuration
 checkpoint_cb = ModelCheckpoint(
-    monitor="train/loss_simple",
-    dirpath=checkpoint_dir,
-    save_top_k= 1,
-    every_n_train_steps=checkpoint_freq,
-    filename="pix2pix-{epoch:02}-{step:05}",
-    mode="min"
+    monitor=config['checkpoint']['monitor'],
+    dirpath=config['checkpoint']['path'],
+    save_top_k=config['checkpoint']['save_top_k'],
+    every_n_train_steps=config['checkpoint']['frequency'],
+    filename=config['checkpoint']['filename'],
+    mode=config['checkpoint']['mode']
 )
 
 print('Start image logger part')
@@ -61,7 +57,7 @@ print('Validation dataset size:', len(val_dataset))
 train_dataloader = DataLoader(train_dataset, num_workers=0, batch_size=batch_size, shuffle=True)
 val_dataloader = DataLoader(val_dataset, num_workers=0, batch_size=batch_size, shuffle=True)
 
-logger = WandbImageLogger(batch_frequency=logger_freq, project_name="pix2pix_lite", validation_size=len(val_dataset))
+logger = WandbImageLogger(batch_frequency=logger_freq, project_name=config['wandb']['project'], validation_size=len(val_dataset))
 
 print('End image logger part')
 
@@ -69,15 +65,17 @@ print('Start PyTorch Lightning part')
 
 # Trainer setup
 trainer = pl.Trainer(
-    devices=1, 
+    devices=config['trainer']['devices'], 
     callbacks=[logger, checkpoint_cb], 
-    accumulate_grad_batches=4, 
-    accelerator="gpu", 
-    max_epochs=max_epochs, 
-    val_check_interval=validation_interval
+    accumulate_grad_batches=config['trainer']['accumulate_grad_batches'], 
+    accelerator=config['trainer']['accelerator'],
+    max_epochs=config['trainer']['max_epochs'], 
+    val_check_interval=config['trainer']['validation_interval'],
+    strategy=config['trainer']['strategy']
 )
-# trainer = pl.Trainer(devices=1, callbacks=[logger, checkpoint_cb], accumulate_grad_batches=4, accelerator="gpu", strategy="deepspeed_stage_2_offload", max_epochs=10000, val_check_interval=validation_interval) #You might also try this strategy but it needs a python script (not interactive environment)
-# trainer.strategy.config["zero_force_ds_cpu_optimizer"] = False
+# if the strategy contains deepspeed, then we need to set the zero_force_ds_cpu_optimizer to False
+if "deepspeed" in config['trainer']['strategy']:
+    trainer.strategy.config["zero_force_ds_cpu_optimizer"] = False
 
 print('End PyTorch Lightning part')
 
