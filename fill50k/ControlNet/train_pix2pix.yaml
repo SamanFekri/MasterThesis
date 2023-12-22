@@ -1,0 +1,19 @@
+dataset:
+  path_processed: '../../../dataset/pix2pix_clipped'
+  validation_ratio: 0.0002
+
+model:
+  control_net_path: '../../../models/control_sd15_ini.ckpt'
+  config_file: './models/scldm_v15.yaml'
+  learning_rate: 0.00005
+  sd_locked: true
+  only_mid_control: false
+
+training:
+  batch_size: 1
+  logger_freq: 1000
+  seed: 42
+  validation_interval: 10000
+  max_epochs: 10000
+  checkpoint_freq: 1000
+  checkpoint_dir: '../../../checkpoints'
