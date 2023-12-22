@@ -4,6 +4,7 @@ wandb:
 dataset:
   path_processed: '../../../dataset/pix2pix_clipped'
   validation_ratio: 0.0002
+  num_workers: 7
 
 model:
   control_net_path: '../../../models/control_sd15_ini.ckpt'

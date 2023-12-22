@@ -54,8 +54,8 @@ train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 print('Train dataset size:', len(train_dataset))
 print('Validation dataset size:', len(val_dataset))
 
-train_dataloader = DataLoader(train_dataset, num_workers=0, batch_size=batch_size, shuffle=True)
-val_dataloader = DataLoader(val_dataset, num_workers=0, batch_size=batch_size, shuffle=True)
+train_dataloader = DataLoader(train_dataset, num_workers=config['dataset']['num_workers'], batch_size=batch_size, shuffle=True)
+val_dataloader = DataLoader(val_dataset, num_workers=config['dataset']['num_workers'], batch_size=batch_size, shuffle=True)
 
 logger = WandbImageLogger(batch_frequency=logger_freq, project_name=config['wandb']['project'], validation_size=len(val_dataset))
 
