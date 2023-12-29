@@ -12,7 +12,6 @@ from dotenv import dotenv_values
 with open('train_pix2pix.yaml', 'r') as file:
     config = yaml.safe_load(file)
 
-DATASET_PATH = config['dataset']['path_processed']
 
 # Configs from YAML
 resume_path = config['model']['control_net_path']
@@ -46,7 +45,12 @@ checkpoint_cb = ModelCheckpoint(
 print('Start image logger part')
 
 # Dataset and Dataloader setup
-dataset = ControlNetDataset(DATASET_PATH, backward=True)
+dataset = ControlNetDataset(config['dataset']['path_processed'],
+                            data_file=config['dataset']['data_file'],
+                            source=config['dataset']['source'],
+                            target=config['dataset']['target'],
+                            prompt=config['dataset']['prompt'],
+                            backward=config['dataset']['backward'])
 train_size = int(len(dataset) * (1 - validation_ratio))
 val_size = len(dataset) - train_size
 train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
