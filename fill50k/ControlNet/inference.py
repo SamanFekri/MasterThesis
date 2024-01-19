@@ -36,7 +36,7 @@ def run_sampler(
     input_image: np.ndarray,
     prompt: str,
     num_samples: int = 1,
-    image_resolution: int = 256,
+    image_resolution: int = 512,
     seed: int = -1,
     a_prompt: str = A_PROMPT_DEFAULT,
     n_prompt: str = N_PROMPT_DEFAULT,
