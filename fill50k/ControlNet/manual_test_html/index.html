@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluation Result</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+</head>
+<body class="bg-gray-900 text-white flex justify-center">
+    <div class="w-full p-4" id="app">
+        <!-- Your Vue components and content go here -->
+        <div class="w-full" v-if="items.length > 0">
+            <div v-for="item in items" :key="item.id"
+                class="my-2 border border-white flex items-center">
+                <h2 class="text-lg text-center w-16 h-full">
+                    {{item.index}}
+                </h2>
+                <section class="w-fit flex flex-col items-center">
+                    <div class="w-full flex flex-row items-center">
+                        <img :src="item.src" alt="Original Image" class="w-1/4">
+                        <span v-html="arrowRight" class="w-8"></span>
+                        <div class="flex relative w-1/4">
+                            <img :src="item.dst" alt="Edited Image" class="w-full">
+                            <p class="absolute w-full t-0 text-center text-sm bg-black bg-opacity-40">{{item.prompt}}</p>
+                        </div>
+                        <span v-html="arrowRight" class="w-8"></span>
+                        <div class="flex flex-col w-fit border-l border-white">
+                            <div class="flex w-full items-center">
+                                <p class="pl-2">Pix2Pix</p>
+                                <span v-html="arrowRight" class="w-8"></span>
+                                <div class="relative flex">
+                                    <img :src="item.p2p" alt="Edited Image Reversed By pix2pix while reverse prompt" class="w-full">
+                                    <p class="absolute w-full t-0 text-center text-sm bg-black bg-opacity-40">{{item.prompt_reverse}}</p>
+                                </div>
+                            </div>
+                            <div class="flex w-full items-center border-t border-white">
+                                <p class="pl-2">Control</p>
+                                <span v-html="arrowRight" class="w-8"></span>
+                                <div class="relative flex">
+                                    <img :src="item.cln" alt="Edited Image Reversed by us while using promg" class="w-full">
+                                    <p class="absolute w-full t-0 text-center text-sm bg-black bg-opacity-40">{{item.prompt}}</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        
+        const app = Vue.createApp({
+            // Your Vue app configuration goes here
+            data() {
+                return {
+                    items: [],
+                    arrowRight: `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14"></path>
+                        <path d="M12 5l7 7-7 7"></path>
+                    </svg> 
+                    `
+                }
+            },
+            methods: {
+                async fetchItems() {
+                    const response = await fetch('prompt.json');
+                    // read the response body as a text
+                    let data = await response.text();
+                    // split by new lines
+                    data = data.split("\n");
+                    // map json parse to each element
+                    data = data.map(JSON.parse);
+                    // set the items
+                    return data
+                }
+            },
+            mounted() {
+                fetch('prompt.json')
+                    .then(response => this.fetchItems())
+                    .then(data => {this.items = data;})
+                    .catch(error => {console.error('Error:', error);});
+            }
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+</html>
