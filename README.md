@@ -8,12 +8,31 @@ alias python=python3
 ```
 
 ### 1. Install conda
-
+#### 1.1 Install the conda
 ```
 wget https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
 bash Anaconda3-2023.09-0-Linux-x86_64.sh
+```
+
+#### 1.2 Add to path
+First open `~/.bashrc`
+```
+vim ~/.bashrc
+```
+Write the following in the end of the file
+```
 export PATH=$PATH:/home/ubuntu/anaconda3/bin
 ```
+reload bash
+```
+source ~/.bashrc
+```
+
+#### 1.3 use control environment
+```
+source activate control
+```
+
 
 ### 2. Clone the Repository
 
