@@ -8,7 +8,8 @@
     
 </head>
 <body class="bg-gray-900 text-white flex justify-center">
-    <div class="w-full p-4" id="app">
+    <div v-if="selectedOption !== {}" class="w-full p-4" id="app">
+        
         <!-- Your Vue components and content go here -->
         <div class="w-full" v-if="items.length > 0">
             <div v-for="item in items" :key="item.id"
@@ -18,19 +19,19 @@
                 </h2>
                 <section class="w-fit flex flex-col items-center">
                     <div class="w-full flex flex-row items-center">
-                        <img :src="item.src" alt="Original Image" class="w-1/4">
+                        <img :src="item[selectedOption.src]" alt="Original Image" class="w-1/4">
                         <span v-html="arrowRight" class="w-8"></span>
                         <div class="flex relative w-1/4">
-                            <img :src="item.dst" alt="Edited Image" class="w-full">
+                            <img :src="item[selectedOption.dst]" alt="Edited Image" class="w-full">
                             <p class="absolute w-full t-0 text-center text-sm bg-black bg-opacity-40">{{item.prompt}}</p>
                         </div>
                         <span v-html="arrowRight" class="w-8"></span>
                         <div class="flex flex-col w-fit border-l border-white">
                             <div class="flex w-full items-center">
-                                <p class="pl-2">Pix2Pix</p>
+                                <p class="pl-2">{{selectedOption.name}}</p>
                                 <span v-html="arrowRight" class="w-8"></span>
                                 <div class="relative flex">
-                                    <img :src="item.p2p" alt="Edited Image Reversed By pix2pix while reverse prompt" class="w-full">
+                                    <img :src="item[selectedOption.ref]" alt="Edited Image Reversed By pix2pix while reverse prompt" class="w-full">
                                     <p class="absolute w-full t-0 text-center text-sm bg-black bg-opacity-40">{{item.prompt_reverse}}</p>
                                 </div>
                             </div>
@@ -38,7 +39,7 @@
                                 <p class="pl-2">Control</p>
                                 <span v-html="arrowRight" class="w-8"></span>
                                 <div class="relative flex">
-                                    <img :src="item.cln" alt="Edited Image Reversed by us while using promg" class="w-full">
+                                    <img :src="item[selectedOption.res]" alt="Edited Image Reversed by us while using promg" class="w-full">
                                     <p class="absolute w-full t-0 text-center text-sm bg-black bg-opacity-40">{{item.prompt}}</p>
                                 </div>
                             </div>
@@ -63,7 +64,12 @@
                         <path d="M5 12h14"></path>
                         <path d="M12 5l7 7-7 7"></path>
                     </svg> 
-                    `
+                    `,
+                    resultOptions: [
+                        {name: 'pix2pix', src: 'src', dst: 'dst', ref: 'p2p', res: 'cln'},
+                        {name: 'CRLN+p2p', src: 'src', dst: 'dst', ref: 'net', res: 'cln'},
+                    ],
+                    selectedOption: {}
                 }
             },
             methods: {
@@ -80,6 +86,7 @@
                 }
             },
             mounted() {
+                this.selectedOption = this.resultOptions[1];
                 fetch('prompt.json')
                     .then(response => this.fetchItems())
                     .then(data => {this.items = data;})
