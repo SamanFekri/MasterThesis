@@ -28,11 +28,6 @@ reload bash
 source ~/.bashrc
 ```
 
-#### 1.3 use control environment
-```
-source activate control
-```
-
 
 ### 2. Clone the Repository
 
@@ -82,6 +77,11 @@ CHECKPOINT_PATH=../checkpoints
 cd fill50k/ControlNet
 conda env create -f environment.yaml
 cd ../..
+```
+
+#### 5.1 use control environment
+```
+source activate control
 ```
 
 ### 6. Download from hugging face and convert it

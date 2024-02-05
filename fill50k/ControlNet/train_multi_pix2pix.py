@@ -1,7 +1,7 @@
 import yaml
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader, random_split
-from dataset.ControlNetDataset import ControlNetDataset
+from dataset.MultiControlNetDataset import MultiControlNetDataset
 from cldm.model import create_model, load_state_dict
 from cldm.wandb_logger import WandbImageLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -45,7 +45,7 @@ checkpoint_cb = ModelCheckpoint(
 print('Start image logger part')
 
 # Dataset and Dataloader setup
-dataset = ControlNetDataset(config['dataset']['path_processed'],
+dataset = MultiControlNetDataset(config['dataset']['path_processed'],
                             data_file=config['dataset']['data_file'],
                             source=config['dataset']['source'],
                             target=config['dataset']['target'],
