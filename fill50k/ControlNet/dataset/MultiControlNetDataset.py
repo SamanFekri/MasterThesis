@@ -53,10 +53,6 @@ class ControlNetDataset(Dataset):
         # Do not forget that OpenCV read images in BGR order.
         source = cv2.cvtColor(source, cv2.COLOR_BGR2RGB)
         target = cv2.cvtColor(target, cv2.COLOR_BGR2RGB)
-        
-        # Adding two times the same image
-        source = np.concatenate([source,source],axis=2)
-
 
         # Normalize source images to [0, 1].
         source = source.astype(np.float32) / 255.0
