@@ -6,7 +6,7 @@ import os
 from torch.utils.data import Dataset
 
 
-class ControlNetDataset(Dataset):
+class MultiControlNetDataset(Dataset):
 
     def __init__(self, dataset_path, backward: bool = False, data_file: str = 'prompt.json', source: str = 'source', target: str = 'target', prompt: str = 'prompt'):
         """
