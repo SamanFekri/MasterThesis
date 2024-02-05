@@ -20,7 +20,7 @@ model:
 
 checkpoint:
   path: '../../../checkpoints'
-  frequency: 10000
+  frequency: 1000
   monitor: 'global_step'
   mode: 'max'
   filename: 'v2-{epoch:02}-{step:05}'
@@ -28,7 +28,7 @@ checkpoint:
 
 training:
   batch_size: 1
-  logger_freq: 10000
+  logger_freq: 1000
   seed: 42
 
 trainer:
