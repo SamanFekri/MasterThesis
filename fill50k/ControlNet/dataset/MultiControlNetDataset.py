@@ -5,6 +5,9 @@ import os
 
 from torch.utils.data import Dataset
 
+from annotator.canny import CannyDetector
+from annotator.util import resize_image, HWC3
+
 
 class MultiControlNetDataset(Dataset):
 
@@ -25,6 +28,12 @@ class MultiControlNetDataset(Dataset):
         self.source = source
         self.target = target
         self.prompt = prompt
+        
+        self.canny_low = 100
+        self.canny_high = 200
+        self.resolution = 512
+        self.apply_canny = CannyDetector()
+
 
         temp_path = os.path.join(dataset_path, data_file)
 
@@ -54,10 +63,15 @@ class MultiControlNetDataset(Dataset):
         source = cv2.cvtColor(source, cv2.COLOR_BGR2RGB)
         target = cv2.cvtColor(target, cv2.COLOR_BGR2RGB)
         
-        source = np.concatenate((source, source), axis=2)
+        # Add canny detector as second control
+        detected_map = resize_image(HWC3(img), self.resolution)
+        detected_map = self.apply_canny(img, self.canny_low, self.canny_high)
+        canny = HWC3(detected_map)
+        
+        # concat the channels to source
+        source = np.concatenate((source, canny), axis=2)
 
         
-
         # Normalize source images to [0, 1].
         # source = np.transpose(source, (1, 2, 0))
         source = source.astype(np.float32) / 255.0
