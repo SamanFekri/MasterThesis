@@ -36,15 +36,24 @@ class WandbImageLogger(Callback):
     @rank_zero_only
     def log_img_wandb(self, split, images, global_step, current_epoch, batch_idx):
         wandb_images = []
+        nrow = 0
         for k in images:
-            grid = torchvision.utils.make_grid(images[k], nrow=4)
-            if self.rescale:
-                grid = (grid + 1.0) / 2.0  # -1,1 -> 0,1; c,h,w
-            grid = grid.numpy().transpose((1, 2, 0))  # c,h,w -> h,w,c
-            grid = (grid * 255).astype(np.uint8)
-            pil_img = Image.fromarray(grid)
-            # Convert to wandb.Image format for logging
-            wandb_images.append(wandb.Image(pil_img, caption=f"{k}_e-{current_epoch:02}_gs-{global_step:06}_b-{batch_idx:06}"))
+            nrow += len(images[k][0])
+        nrow = nrow // 3;
+
+        for k in images:
+            nparts = len(images[k][0]) // 3;
+            for p in range(nparts):
+                img_part = images[k][:, p*3:(p+1)*3, :, :]
+                grid = torchvision.utils.make_grid(img_part, nrow=nrow)
+                if self.rescale:
+                    grid = (grid + 1.0) / 2.0  # -1,1 -> 0,1; c,h,w
+                grid = grid.numpy().transpose((1, 2, 0))  # c,h,w -> h,w,c
+                grid = (grid * 255).astype(np.uint8)
+                pil_img = Image.fromarray(grid)
+                # Convert to wandb.Image format for logging
+                
+                wandb_images.append(wandb.Image(pil_img, caption=f"{k}_p{p}_e-{current_epoch:02}_gs-{global_step:06}_b-{batch_idx:06}"))
         # Log the list of wandb.Image objects
         if split == "val":
             wandb.log({f"{split}_images": wandb_images})
