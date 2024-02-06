@@ -64,8 +64,8 @@ class MultiControlNetDataset(Dataset):
         target = cv2.cvtColor(target, cv2.COLOR_BGR2RGB)
         
         # Add canny detector as second control
-        detected_map = resize_image(HWC3(img), self.resolution)
-        detected_map = self.apply_canny(img, self.canny_low, self.canny_high)
+        detected_map = resize_image(HWC3(source), self.resolution)
+        detected_map = self.apply_canny(detected_map, self.canny_low, self.canny_high)
         canny = HWC3(detected_map)
         
         # concat the channels to source
