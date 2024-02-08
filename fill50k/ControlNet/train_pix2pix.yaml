@@ -20,7 +20,7 @@ model:
 
 checkpoint:
   path: '../../../checkpoints'
-  frequency: 1000
+  frequency: 250
   monitor: 'global_step'
   mode: 'max'
   filename: 'v2-{epoch:02}-{step:05}'
