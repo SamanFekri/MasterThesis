@@ -2,13 +2,7 @@
 ## How to install on new machibe
 ### 0. install require things
 
-#### 0.1 Make key and copy it on github
-```
-ssh-keygen -t rsa -b 4096
-cat .ssh/id_rsa.pub
-```
-
-#### 0.2 Mount the hard
+#### 0.1 Mount the hard
 If you have hard with the code and dataset on it you can mount it.
 Be aware If you moount this the path of code in the following could be different
 ```
@@ -19,7 +13,7 @@ lsblk
 cd work/home/ubuntu
 ```
 
-#### 0.3 Install packages
+#### 0.2 Install packages
 ```
 sudo apt install screen git vim wget
 alias python=python3
