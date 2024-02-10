@@ -20,10 +20,10 @@ model:
 
 checkpoint:
   path: '../../../checkpoints'
-  frequency: 250
+  frequency: 1250
   monitor: 'global_step'
   mode: 'max'
-  filename: 'v2-{epoch:02}-{step:05}'
+  filename: 'vrs1-{epoch:02}-{step:05}'
   save_top_k: 1
 
 training:
