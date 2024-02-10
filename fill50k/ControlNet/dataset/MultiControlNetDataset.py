@@ -29,10 +29,15 @@ class MultiControlNetDataset(Dataset):
         self.target = target
         self.prompt = prompt
         
-        self.canny_low = 100
-        self.canny_high = 200
-        self.resolution = 512
-        self.apply_canny = CannyDetector()
+        # For Adding Canny edges
+        # self.canny_low = 100
+        # self.canny_high = 200
+        # self.resolution = 512
+        # self.apply_canny = CannyDetector()
+        
+        # For resizing the original Image
+        self.small_dim = (32, 32)
+        self.original_fim = (512, 512)
 
 
         temp_path = os.path.join(dataset_path, data_file)
@@ -64,12 +69,17 @@ class MultiControlNetDataset(Dataset):
         target = cv2.cvtColor(target, cv2.COLOR_BGR2RGB)
         
         # Add canny detector as second control
-        detected_map = resize_image(HWC3(target), self.resolution)
-        detected_map = self.apply_canny(detected_map, self.canny_low, self.canny_high)
-        canny = HWC3(detected_map)
+        # detected_map = resize_image(HWC3(target), self.resolution)
+        # detected_map = self.apply_canny(detected_map, self.canny_low, self.canny_high)
+        # control = HWC3(detected_map)
+        
+        # Resize the original Image
+        control = cv2.resize(target, self.small_dim, interpolation = cv2.INTER_AREA)
+        control = cv2.resize(control, self.original_dim, interpolation = cv2.INTER_AREA)
+
         
         # concat the channels to source
-        source = np.concatenate((source, canny), axis=2)
+        source = np.concatenate((source, control), axis=2)
 
         
         # Normalize source images to [0, 1].
