@@ -37,7 +37,7 @@ class MultiControlNetDataset(Dataset):
         
         # For resizing the original Image
         self.small_dim = (32, 32)
-        self.original_fim = (512, 512)
+        self.original_dim = (512, 512)
 
 
         temp_path = os.path.join(dataset_path, data_file)
