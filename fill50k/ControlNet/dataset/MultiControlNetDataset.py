@@ -36,7 +36,7 @@ class MultiControlNetDataset(Dataset):
         # self.apply_canny = CannyDetector()
         
         # For resizing the original Image
-        self.small_dim = (32, 32)
+        self.small_dim = (8, 8)
         self.original_dim = (512, 512)
 
 
