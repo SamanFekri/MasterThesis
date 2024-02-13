@@ -32,7 +32,7 @@ model = create_model(config['model']['config_file']).cpu()
 lsd = load_state_dict(resume_path, location='cpu')
 
 # Convert the list of tensors to a single tensor
-repeated_tensor = torch.stack([torch.tensor(item).repeat(1, 2, 1, 1) for item in lsd['control_model.input_hint_block.0.weight']]).squeeze(1)
+repeated_tensor = torch.stack([torch.tensor(item).repeat(1, config['model']['num_hints'], 1, 1) for item in lsd['control_model.input_hint_block.0.weight']]).squeeze(1)
 
 # Assign the corrected tensor to the state dictionary
 lsd['control_model.input_hint_block.0.weight'] = repeated_tensor

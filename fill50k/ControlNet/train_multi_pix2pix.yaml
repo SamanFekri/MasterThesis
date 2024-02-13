@@ -17,13 +17,14 @@ model:
   learning_rate: 0.0001
   sd_locked: true
   only_mid_control: false
+  num_hints: 3
 
 checkpoint:
   path: '../../../checkpoints'
   frequency: 1250
   monitor: 'global_step'
   mode: 'max'
-  filename: 'vrs1-{epoch:02}-{step:05}'
+  filename: 'vrsc1-{epoch:02}-{step:05}'
   save_top_k: 1
 
 training:
