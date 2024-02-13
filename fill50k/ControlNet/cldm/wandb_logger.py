@@ -54,6 +54,9 @@ class WandbImageLogger(Callback):
                 # Convert to wandb.Image format for logging
                 
                 wandb_images.append(wandb.Image(pil_img, caption=f"{k}_p{p}_e-{current_epoch:02}_gs-{global_step:06}_b-{batch_idx:06}"))
+        # If the nrow is 6 swap index 3 must go to end
+        if nrow == 6:
+            wandb_images.append(wandb_images.pop(3))
         # Log the list of wandb.Image objects
         if split == "val":
             wandb.log({f"{split}_images": wandb_images})
