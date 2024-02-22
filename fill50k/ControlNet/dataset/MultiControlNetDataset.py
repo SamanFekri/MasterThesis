@@ -58,7 +58,7 @@ class MultiControlNetDataset(Dataset):
         if self.backward:
             source_filename, target_filename = target_filename, source_filename
             
-        prompt = item[self.prompt]
+        prompt = "\n".join(item[key.strip()] for key in self.prompt.split(','))
 
 
         source = cv2.imread(f'{self.dataset_path}/{source_filename}')

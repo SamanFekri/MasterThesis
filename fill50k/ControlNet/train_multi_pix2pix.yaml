@@ -6,7 +6,7 @@ dataset:
   data_file: 'prompt.json'
   source: 'source'
   target: 'target'
-  prompt: 'prompt'
+  prompt: 'original_prompt,prompt'
   backward: true
   validation_ratio: 0.0002
   num_workers: 7
