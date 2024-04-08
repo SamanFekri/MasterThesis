@@ -663,16 +663,30 @@ class LatentDiffusion(DDPM):
         return self.scale_factor * z
 
     def get_learned_conditioning(self, c):
+        print('get_learned_conditioning 1')
         if self.cond_stage_forward is None:
+            print('get_learned_conditioning 2')
             if hasattr(self.cond_stage_model, 'encode') and callable(self.cond_stage_model.encode):
+                # print(f'get_learned_conditioning 3 ${type(c)}')
+                print(c)
+                print(type(self.cond_stage_model))
                 c = self.cond_stage_model.encode(c)
+                print('get_learned_conditioning 4')
                 if isinstance(c, DiagonalGaussianDistribution):
+                    print('get_learned_conditioning 5')
                     c = c.mode()
+                    print('get_learned_conditioning 6')
             else:
+                print('get_learned_conditioning 7')
                 c = self.cond_stage_model(c)
+                print('get_learned_conditioning 8')
         else:
+            print('get_learned_conditioning 9')
             assert hasattr(self.cond_stage_model, self.cond_stage_forward)
+            print('get_learned_conditioning 10')
             c = getattr(self.cond_stage_model, self.cond_stage_forward)(c)
+            print('get_learned_conditioning 11')
+        print('get_learned_conditioning 12')
         return c
 
     def meshgrid(self, h, w):
@@ -789,8 +803,10 @@ class LatentDiffusion(DDPM):
             if not self.cond_stage_trainable or force_c_encode:
                 if isinstance(xc, dict) or isinstance(xc, list):
                     c = self.get_learned_conditioning(xc)
+                    print('get input 1')
                 else:
                     c = self.get_learned_conditioning(xc.to(self.device))
+                    print('get input 2')
             else:
                 c = xc
             if bs is not None:
@@ -838,14 +854,19 @@ class LatentDiffusion(DDPM):
         return loss
 
     def forward(self, x, c, *args, **kwargs):
+        # print(c)
         t = torch.randint(0, self.num_timesteps, (x.shape[0],), device=self.device).long()
         if self.model.conditioning_key is not None:
             assert c is not None
             if self.cond_stage_trainable:
+                # print('WE ARE forward 1')
                 c = self.get_learned_conditioning(c)
+                # print('WE ARE forward 2')
             if self.shorten_cond_schedule:  # TODO: drop this option
                 tc = self.cond_ids[t].to(self.device)
                 c = self.q_sample(x_start=c, t=tc, noise=torch.randn_like(c.float()))
+        # print('WE are forward 3')
+        # print(c)
         return self.p_losses(x, c, t, *args, **kwargs)
 
     def apply_model(self, x_noisy, t, cond, return_ids=False):
@@ -884,32 +905,49 @@ class LatentDiffusion(DDPM):
         return mean_flat(kl_prior) / np.log(2.0)
 
     def p_losses(self, x_start, cond, t, noise=None):
+        # print('p_losses 1')
         noise = default(noise, lambda: torch.randn_like(x_start))
+        # print('p_losses 2')
         x_noisy = self.q_sample(x_start=x_start, t=t, noise=noise)
+        # print('p_losses 3')
         model_output = self.apply_model(x_noisy, t, cond)
+        # print('p_losses 4')
 
         loss_dict = {}
         prefix = 'train' if self.training else 'val'
+        # print('p_losses 5')
 
         if self.parameterization == "x0":
+            # print('p_losses 6')
             target = x_start
         elif self.parameterization == "eps":
+            # print('p_losses 7')
             target = noise
         elif self.parameterization == "v":
+            # print('p_losses 8')
             target = self.get_v(x_start, noise, t)
         else:
+            # print('p_losses 9')
             raise NotImplementedError()
 
+        # print('p_losses 10')
         loss_simple = self.get_loss(model_output, target, mean=False).mean([1, 2, 3])
+        # print('p_losses 11')
         loss_dict.update({f'{prefix}/loss_simple': loss_simple.mean()})
+        
+        # print('p_losses 12')
 
         logvar_t = self.logvar[t].to(self.device)
+        # print('p_losses 13')
         loss = loss_simple / torch.exp(logvar_t) + logvar_t
+        print('p_losses 14')
         # loss = loss_simple / torch.exp(self.logvar) + self.logvar
         if self.learn_logvar:
+            # print('p_losses 15')
             loss_dict.update({f'{prefix}/loss_gamma': loss.mean()})
             loss_dict.update({'logvar': self.logvar.data.mean()})
 
+        # print('p_losses 16')
         loss = self.l_simple_weight * loss.mean()
 
         loss_vlb = self.get_loss(model_output, target, mean=False).mean(dim=(1, 2, 3))
@@ -918,6 +956,7 @@ class LatentDiffusion(DDPM):
         loss += (self.original_elbo_weight * loss_vlb)
         loss_dict.update({f'{prefix}/loss': loss})
 
+        # print('p_losses 17')
         return loss, loss_dict
 
     def p_mean_variance(self, x, c, t, clip_denoised: bool, return_codebook_ids=False, quantize_denoised=False,
@@ -1280,10 +1319,10 @@ class LatentDiffusion(DDPM):
         lr = self.learning_rate
         params = list(self.model.parameters())
         if self.cond_stage_trainable:
-            print(f"{self.__class__.__name__}: Also optimizing conditioner params!")
+            # print(f"{self.__class__.__name__}: Also optimizing conditioner params!")
             params = params + list(self.cond_stage_model.parameters())
         if self.learn_logvar:
-            print('Diffusion model optimizing logvar')
+            # print('Diffusion model optimizing logvar')
             params.append(self.logvar)
         opt = torch.optim.AdamW(params, lr=lr)
         if self.use_scheduler:

@@ -4,6 +4,8 @@ from torch.utils.checkpoint import checkpoint
 
 from transformers import T5Tokenizer, T5EncoderModel, CLIPTokenizer, CLIPTextModel
 
+from transformers import CLIPProcessor, CLIPModel, CLIPFeatureExtractor#, CLIPVisionModel,  CLIPVisionModelWithProjection 
+
 import open_clip
 from ldm.util import default, count_params
 
@@ -211,3 +213,78 @@ class FrozenCLIPT5Encoder(AbstractEncoder):
         return [clip_z, t5_z]
 
 
+#########
+# class FrozenCLIPProcessorEmbedder(AbstractEncoder):
+#     """Uses the CLIPProcessor transformer encoder for image (from huggingface)"""
+#     LAYERS = [
+#         "last",
+#         "pooled",
+#         "hidden"
+#     ]
+#     def __init__(self, version="openai/clip-vit-large-patch14", device="cuda", max_length=77,
+#                  freeze=True, layer="last", layer_idx=None):  # clip-vit-base-patch32
+#         super().__init__()
+#         assert layer in self.LAYERS\
+#         # self.tokenizer = CLIPTokenizer.from_pretrained(version)
+#         # self.transformer = CLIPTextModel.from_pretrained(version)
+#         # self.processor = CLIPProcessor.from_pretrained(version)
+#         self.processor = CLIPFeatureExtractor.from_pretrained(version)
+#         self.transformer =  CLIPVisionModelWithProjection.from_pretrained(version)
+        
+#         self.device = device
+#         self.max_length = max_length
+#         if freeze:
+#             self.freeze()
+#         self.layer = layer
+#         self.layer_idx = layer_idx
+#         if layer == "hidden":
+#             assert layer_idx is not None
+#             assert 0 <= abs(layer_idx) <= 12
+
+#     def freeze(self):
+#         self.transformer = self.transformer.eval()
+#         #self.train = disabled_train
+#         for param in self.parameters():
+#             param.requires_grad = False
+
+#     # def forward(self, text):
+#     #     batch_encoding = self.tokenizer(text, truncation=True, max_length=self.max_length, return_length=True,
+#     #                                     return_overflowing_tokens=False, padding="max_length", return_tensors="pt")
+#     #     tokens = batch_encoding["input_ids"].to(self.device)
+#     #     outputs = self.transformer(input_ids=tokens, output_hidden_states=self.layer=="hidden")
+#     #     if self.layer == "last":
+#     #         z = outputs.last_hidden_state
+#     #     elif self.layer == "pooled":
+#     #         z = outputs.pooler_output[:, None, :]
+#     #     else:
+#     #         z = outputs.hidden_states[self.layer_idx]
+#     #     return z
+    
+#     def forward(self, image):
+#         print('herererererererrere')
+#         print(image)
+#         inputs = self.processor(images=[image.cpu()[0]], return_tensors="pt", padding=True)
+#         print('SALAM!')
+#         print(inputs)
+#         inputs = inputs.to(self.device)
+#         outputs = self.transformer(**inputs, output_hidden_states=self.layer=="hidden")
+#         print('SALAM!!')
+#         print(outputs)
+#         outputs= self.transformer.visual_projection(outputs)
+#         if self.layer == "last":
+#             print('SALAM LAST')
+#             z = outputs.last_hidden_state
+#         elif self.layer == "pooled":
+#             print('SALAM POOLED')
+#             z = outputs.pooler_output[:, None, :]
+#         else:
+#             print('SALAM NONE')
+#             z = outputs.hidden_states[self.layer_idx]
+#         print(z)
+#         return z
+
+#     # def encode(self, text):
+#     #     return self(text)
+#     def encode(self, image):
+#         return self.forward(image)
+        
