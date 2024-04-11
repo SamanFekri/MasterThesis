@@ -7,6 +7,7 @@ from cldm.wandb_logger import WandbImageLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
 import wandb
 from dotenv import dotenv_values
+import torch
 
 # Load the configuration file
 with open('train_pix2pix.yaml', 'r') as file:
@@ -27,7 +28,16 @@ pl.seed_everything(seed, workers=True)
 
 # Model Creation
 model = create_model(config['model']['config_file']).cpu()
-model.load_state_dict(load_state_dict(resume_path, location='cpu'))
+
+lsd = load_state_dict(resume_path, location='cpu')
+
+# Convert the list of tensors to a single tensor
+repeated_tensor = torch.stack([torch.tensor(item).repeat(1, config['model']['num_hints'], 1, 1) for item in lsd['control_model.input_hint_block.0.weight']]).squeeze(1)
+
+# Assign the corrected tensor to the state dictionary
+lsd['control_model.input_hint_block.0.weight'] = repeated_tensor
+
+model.load_state_dict(lsd, strict=False)
 model.learning_rate = learning_rate
 model.sd_locked = sd_locked
 model.only_mid_control = only_mid_control

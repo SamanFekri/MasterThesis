@@ -1,5 +1,5 @@
 model:
-  target: cldm.scldm.ExtendedControlLDM
+  target: cldm.scldm.NegativeControlLDM
   params:
     linear_start: 0.00085
     linear_end: 0.0120
@@ -10,7 +10,7 @@ model:
     cond_stage_key: "txt"
     control_key: "hint"
     image_size: 64
-    channels: 4 # changed from 4 to 7
+    channels: 4
     cond_stage_trainable: false
     conditioning_key: crossattn
     monitor: val/loss_simple_ema
@@ -23,7 +23,7 @@ model:
       params:
         image_size: 32 # unused
         in_channels: 4
-        hint_channels: 9 # 3 for one image, 2 * 3 for 2 image hint, 3 * 3 for 3 images
+        hint_channels: 3
         model_channels: 320
         attention_resolutions: [ 4, 2, 1 ]
         num_res_blocks: 2
@@ -76,5 +76,4 @@ model:
           target: torch.nn.Identity
 
     cond_stage_config:
-      target: ldm.modules.encoders.modules.FrozenCLIPEmbedder
-      # target: ldm.modules.encoders.modules.FrozenOpenCLIPEmbedder
+      target: ldm.modules.encoders.modules.NegativeFrozenCLIPEmbedder

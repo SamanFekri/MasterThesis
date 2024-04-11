@@ -90,7 +90,7 @@ class DDPM(pl.LightningModule):
         self.channels = channels
         self.use_positional_encodings = use_positional_encodings
         self.model = DiffusionWrapper(unet_config, conditioning_key)
-        print(conditioning_key)
+        # print(conditioning_key)
         count_params(self.model, verbose=True)
         self.use_ema = use_ema
         if self.use_ema:
@@ -663,30 +663,30 @@ class LatentDiffusion(DDPM):
         return self.scale_factor * z
 
     def get_learned_conditioning(self, c):
-        print('get_learned_conditioning 1')
+        # print('get_learned_conditioning 1')
         if self.cond_stage_forward is None:
-            print('get_learned_conditioning 2')
+            # print('get_learned_conditioning 2')
             if hasattr(self.cond_stage_model, 'encode') and callable(self.cond_stage_model.encode):
                 # print(f'get_learned_conditioning 3 ${type(c)}')
-                print(c)
-                print(type(self.cond_stage_model))
+                # print(c)
+                # print(type(self.cond_stage_model))
                 c = self.cond_stage_model.encode(c)
-                print('get_learned_conditioning 4')
+                # print('get_learned_conditioning 4')
                 if isinstance(c, DiagonalGaussianDistribution):
-                    print('get_learned_conditioning 5')
+                    # print('get_learned_conditioning 5')
                     c = c.mode()
-                    print('get_learned_conditioning 6')
+                    # print('get_learned_conditioning 6')
             else:
-                print('get_learned_conditioning 7')
+                # print('get_learned_conditioning 7')
                 c = self.cond_stage_model(c)
-                print('get_learned_conditioning 8')
+                # print('get_learned_conditioning 8')
         else:
-            print('get_learned_conditioning 9')
+            # print('get_learned_conditioning 9')
             assert hasattr(self.cond_stage_model, self.cond_stage_forward)
-            print('get_learned_conditioning 10')
+            # print('get_learned_conditioning 10')
             c = getattr(self.cond_stage_model, self.cond_stage_forward)(c)
-            print('get_learned_conditioning 11')
-        print('get_learned_conditioning 12')
+            # print('get_learned_conditioning 11')
+        # print('get_learned_conditioning 12')
         return c
 
     def meshgrid(self, h, w):
@@ -803,10 +803,10 @@ class LatentDiffusion(DDPM):
             if not self.cond_stage_trainable or force_c_encode:
                 if isinstance(xc, dict) or isinstance(xc, list):
                     c = self.get_learned_conditioning(xc)
-                    print('get input 1')
+                    # print('get input 1')
                 else:
                     c = self.get_learned_conditioning(xc.to(self.device))
-                    print('get input 2')
+                    # print('get input 2')
             else:
                 c = xc
             if bs is not None:
@@ -940,7 +940,7 @@ class LatentDiffusion(DDPM):
         logvar_t = self.logvar[t].to(self.device)
         # print('p_losses 13')
         loss = loss_simple / torch.exp(logvar_t) + logvar_t
-        print('p_losses 14')
+        # print('p_losses 14')
         # loss = loss_simple / torch.exp(self.logvar) + self.logvar
         if self.learn_logvar:
             # print('p_losses 15')
