@@ -13,8 +13,8 @@ dataset:
 
 model:
   control_net_path: '../../../models/control_sd15_ini.ckpt'
-  config_file: './models/negative_scldm_v15.yaml'
-  learning_rate: 0.00005
+  config_file: './models/scldm_v15.yaml'
+  learning_rate: 0.0001
   sd_locked: true
   only_mid_control: false
   num_hints: 1
