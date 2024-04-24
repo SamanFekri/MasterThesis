@@ -6,7 +6,7 @@ dataset:
   data_file: 'prompt.json'
   source: 'source'
   target: 'target'
-  prompt: 'original_prompt,prompt'
+  prompt: 'prompt'
   backward: true
   validation_ratio: 0.0002
   num_workers: 7
@@ -24,7 +24,7 @@ checkpoint:
   frequency: 1250
   monitor: 'global_step'
   mode: 'max'
-  filename: 'vrsc1-{epoch:02}-{step:05}'
+  filename: 'vrsc2-{epoch:02}-{step:05}'
   save_top_k: 1
 
 training:
