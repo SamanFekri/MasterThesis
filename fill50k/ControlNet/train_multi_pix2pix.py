@@ -9,6 +9,7 @@ import wandb
 from dotenv import dotenv_values
 import torch
 
+
 # Load the configuration file
 with open('train_multi_pix2pix.yaml', 'r') as file:
     config = yaml.safe_load(file)

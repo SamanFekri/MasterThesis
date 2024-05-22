@@ -13,7 +13,7 @@ dataset:
 
 model:
   control_net_path: '../../../models/control_sd15_ini.ckpt'
-  config_file: './models/negative_mmscldm_v15.yaml'
+  config_file: './models/mmscldm_v15.yaml'
   learning_rate: 0.0001
   sd_locked: true
   only_mid_control: false
@@ -24,7 +24,7 @@ checkpoint:
   frequency: 1250
   monitor: 'global_step'
   mode: 'max'
-  filename: 'neg-vrsc2-{epoch:02}-{step:05}'
+  filename: 'vrsc3-{epoch:02}-{step:05}'
   save_top_k: 1
 
 training:
