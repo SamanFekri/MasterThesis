@@ -3,7 +3,8 @@ wandb:
 
 dataset:
   path_processed: '../../../../dataset/pix2pix_lite/output'
-  data_file: 'prompt.json'
+  data_file: 'prompt_train.json'
+  validation_file: 'prompt_validation.json'
   source: 'source'
   target: 'target'
   prompt: 'prompt'

@@ -56,15 +56,30 @@ checkpoint_cb = ModelCheckpoint(
 print('Start image logger part')
 
 # Dataset and Dataloader setup
-dataset = MultiControlNetDataset(config['dataset']['path_processed'],
+# dataset = MultiControlNetDataset(config['dataset']['path_processed'],
+#                             data_file=config['dataset']['data_file'],
+#                             source=config['dataset']['source'],
+#                             target=config['dataset']['target'],
+#                             prompt=config['dataset']['prompt'],
+#                             backward=config['dataset']['backward'])
+# train_size = int(len(dataset) * (1 - validation_ratio))
+# val_size = len(dataset) - train_size
+# train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+# Dataset and Dataloader setup
+train_dataset = ControlNetDataset(config['dataset']['path_processed'],
                             data_file=config['dataset']['data_file'],
                             source=config['dataset']['source'],
                             target=config['dataset']['target'],
                             prompt=config['dataset']['prompt'],
                             backward=config['dataset']['backward'])
-train_size = int(len(dataset) * (1 - validation_ratio))
-val_size = len(dataset) - train_size
-train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+
+# Dataset and Dataloader setup
+val_dataset = ControlNetDataset(config['dataset']['path_processed'],
+                            data_file=config['dataset']['validation_file'],
+                            source=config['dataset']['source'],
+                            target=config['dataset']['target'],
+                            prompt=config['dataset']['prompt'],
+                            backward=config['dataset']['backward'])
 
 print('Train dataset size:', len(train_dataset))
 print('Validation dataset size:', len(val_dataset))
