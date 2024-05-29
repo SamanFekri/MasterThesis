@@ -1,4 +1,9 @@
 import json
+import yaml
+
+with open('splitter.yaml', 'r') as file:
+    config = yaml.safe_load(file)
+    print(config)
 
 
 def split_json_file(input_file, train_file, validation_file, num_validation_items):
@@ -29,10 +34,20 @@ def split_json_file(input_file, train_file, validation_file, num_validation_item
 
 
 # Example usage
-input_file = "x.json"
-train_file = "train.json"
-validation_file = "validation.json"
-num_validation_items = 20
+input_file = config['splitter']['data_path']
+train_file = config['splitter']['train_path']
+validation_file = config['splitter']['validation_path']
+num_validation_items = config['splitter']['validation_size']
 
 split_json_file(input_file, train_file, validation_file, num_validation_items)
 print(f"Split complete! Train data in '{train_file}', validation data in '{validation_file}'.")
+
+# read the validation file and tell me number of lines
+with open(validation_file, 'r') as f:
+    json_lines = f.readlines()
+    print(f"Number of lines in validation file: {len(json_lines)}")
+
+# read the train file and tell me number of lines
+with open(train_file, 'r') as f:
+    json_lines = f.readlines()
+    print(f"Number of lines in train file: {len(json_lines)}")
