@@ -8,7 +8,8 @@ Be aware If you moount this the path of code in the following could be different
 ```
 lsblk
 mkdir work
-sudo mount /dev/nvme2n1p1 ./work
+sudo mkfs -t ext4 /dev/nvme1n1
+sudo mount /dev/nvme1n1 ./work
 lsblk
 cd work/home/ubuntu
 ```
