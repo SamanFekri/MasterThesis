@@ -2,7 +2,7 @@ wandb:
   project: 'pix2pix_final'
 
 dataset:
-  path_processed: '../../../work/dataset/pix2pix_clipped/output'
+  path_processed: '../../../work/dataset/pix2pix_clipped'
   data_file: 'prompt_train.json'
   validation_file: 'prompt_validation.json'
   source: 'source'
@@ -22,15 +22,15 @@ model:
 
 checkpoint:
   path: '../../../checkpoints'
-  frequency: 2500
+  frequency: 5000
   monitor: 'global_step'
   mode: 'max'
   filename: 'v-canny-prompt-{epoch:02}-{step:05}'
-  save_top_k: 1
+  save_top_k: 5
 
 training:
   batch_size: 1
-  logger_freq: 5000
+  logger_freq: 10000
   seed: 42
 
 trainer:
@@ -39,6 +39,6 @@ trainer:
   accelerator: 'gpu'
   use_deepspeed: false
   max_epochs: 10000
-  validation_interval: 20000
+  validation_interval: 30000
   strategy: 'auto'
 
