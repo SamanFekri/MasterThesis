@@ -16,7 +16,7 @@ cd work/home/ubuntu
 
 #### 0.2 Install packages
 ```
-sudo apt install screen git vim wget
+sudo apt install screen git vim wget -y
 alias python=python3
 ```
 
