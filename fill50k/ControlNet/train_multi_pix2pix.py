@@ -66,7 +66,7 @@ print('Start image logger part')
 # val_size = len(dataset) - train_size
 # train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 # Dataset and Dataloader setup
-train_dataset = ControlNetDataset(config['dataset']['path_processed'],
+train_dataset = MultiControlNetDataset(config['dataset']['path_processed'],
                             data_file=config['dataset']['data_file'],
                             source=config['dataset']['source'],
                             target=config['dataset']['target'],
@@ -74,7 +74,7 @@ train_dataset = ControlNetDataset(config['dataset']['path_processed'],
                             backward=config['dataset']['backward'])
 
 # Dataset and Dataloader setup
-val_dataset = ControlNetDataset(config['dataset']['path_processed'],
+val_dataset = MultiControlNetDataset(config['dataset']['path_processed'],
                             data_file=config['dataset']['validation_file'],
                             source=config['dataset']['source'],
                             target=config['dataset']['target'],
