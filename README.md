@@ -101,8 +101,14 @@ source activate control
 
 ```
 screen -S download
-python download_hugging.py && python convert_to_controlnet.py
+python download_hugging.py
 // Ctrl+A Ctrl+d for detaching from it
+// After this ends (If all data has beed downloaded Also could end with error it doesn't matter)
+python convert_to_controlnet.py
+// Ctrl+A Ctrl+d for detaching from it
+// After this process ends run This make seperate validation and train by random
+python splitter.py
+// Download this files to have same train and validation split
 ```
 
 ### 7. Download the SD model
