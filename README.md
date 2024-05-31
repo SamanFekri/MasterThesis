@@ -135,5 +135,13 @@ wandb login
 
 ```
 cd MasterThesis/fill50k
-python train_pix2pix.py
+python train_multi_pix2pix.py
+```
+
+#### Warning
+If you had error conda `importerror libsm.so.6` on opencv try to use the following fix:
+```
+sudo pip install opencv-python
+sudo apt update && apt install -y libsm6 libxext6
+sudo apt-get install -y libxrender-dev
 ```
