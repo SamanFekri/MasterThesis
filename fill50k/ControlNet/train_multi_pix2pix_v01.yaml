@@ -30,7 +30,7 @@ checkpoint:
 
 training:
   batch_size: 1
-  logger_freq: 10000
+  logger_freq: 2000
   seed: 42
 
 trainer:
@@ -39,6 +39,6 @@ trainer:
   accelerator: 'gpu'
   use_deepspeed: false
   max_epochs: 10000
-  validation_interval: 30000
+  validation_interval: 20000
   strategy: 'auto'
 
