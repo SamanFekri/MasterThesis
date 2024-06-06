@@ -1,0 +1,44 @@
+wandb:
+  project: 'pix2pix_'
+
+dataset:
+  path_processed: '../../../../dataset/pix2pix_lite/output'
+  data_file: 'prompt_train.json'
+  validation_file: 'prompt_validation.json'
+  source: 'source'
+  target: 'target'
+  prompt: 'prompt'
+  backward: true
+  validation_ratio: 0.0002
+  num_workers: 7
+
+model:
+  control_net_path: '../../../models/control_sd15_ini.ckpt'
+  config_file: './models/color_scldm_v15.yaml'
+  learning_rate: 0.0001
+  sd_locked: true
+  only_mid_control: false
+  num_hints: 2
+
+checkpoint:
+  path: '../../../checkpoints'
+  frequency: 1250
+  monitor: 'global_step'
+  mode: 'max'
+  filename: 'vrsc3-{epoch:02}-{step:05}'
+  save_top_k: 1
+
+training:
+  batch_size: 1
+  logger_freq: 1000
+  seed: 42
+
+trainer:
+  devices: 1
+  accumulate_grad_batches: 4
+  accelerator: 'gpu'
+  use_deepspeed: false
+  max_epochs: 10000
+  validation_interval: 10000
+  strategy: 'deepspeed_stage_2_offload' # 'auto'
+
