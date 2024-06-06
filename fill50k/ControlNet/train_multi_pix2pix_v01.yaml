@@ -15,7 +15,7 @@ dataset:
 model:
   control_net_path: '../../../models/control_sd15_ini.ckpt'
   config_file: './models/mmscldm_v15.yaml'
-  learning_rate: 0.0001
+  learning_rate: 0.000005
   sd_locked: true
   only_mid_control: false
   num_hints: 3
@@ -25,7 +25,7 @@ checkpoint:
   frequency: 5000
   monitor: 'global_step'
   mode: 'max'
-  filename: 'v-canny-prompt-{epoch:02}-{step:05}'
+  filename: 'v2-canny-prompt-{epoch:02}-{step:05}'
   save_top_k: 5
 
 training:

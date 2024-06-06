@@ -3,3 +3,11 @@ splitter:
   data_path: ../dataset/pix2pix_clipped/prompt.json
   validation_path: ../dataset/pix2pix_clipped/prompt_validation.json
   train_path: ../dataset/pix2pix_clipped/prompt_train.json
+
+gather:
+  dataset_path: ../dataset/pix2pix_clipped
+  original: ../original
+  edited: ../edited
+  prompt: ../prompt
+  canny: ../canny
+  map: ../map
