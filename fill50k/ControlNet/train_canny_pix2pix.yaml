@@ -2,7 +2,7 @@ wandb:
   project: 'pix2pix_final'
 
 dataset:
-  path_processed: '.../../../dataset/pix2pix_clipped'
+  path_processed: '../../../dataset/pix2pix_clipped'
   data_file: 'prompt_train.json'
   validation_file: 'prompt_validation.json'
   source: 'source'
