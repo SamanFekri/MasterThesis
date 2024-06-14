@@ -2,7 +2,7 @@ wandb:
   project: 'pix2pix_final'
 
 dataset:
-  path_processed: '../../../dataset/pix2pix_clipped'
+  path_processed: '../../../../dataset/pix2pix_clipped'
   data_file: 'prompt_train.json'
   validation_file: 'prompt_validation.json'
   source: 'source'
@@ -40,5 +40,5 @@ trainer:
   use_deepspeed: false
   max_epochs: 10000
   validation_interval: 20000
-  strategy: 'auto' # 'auto''deepspeed_stage_2_offload' 
+  strategy: 'deepspeed_stage_2_offload' # 'auto''deepspeed_stage_2_offload' 
 

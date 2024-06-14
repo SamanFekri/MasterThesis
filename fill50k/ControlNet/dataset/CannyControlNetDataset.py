@@ -42,9 +42,16 @@ class CannyControlNetDataset(Dataset):
 
         temp_path = os.path.join(dataset_path, data_file)
 
+        isok = True
         with open(temp_path, 'rt') as f:
             for i, line in enumerate(f):
-                self.data.append(json.loads(line))
+                try:
+                    self.data.append(json.loads(line))
+                except:
+                    print(i)
+                    isok = False
+        if not isok:
+            raise Exception("DATA FAILED")
     
     def __len__(self):
         return len(self.data)

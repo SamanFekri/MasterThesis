@@ -17,7 +17,8 @@ with open('train_neg_canny_pix2pix.yaml', 'r') as file:
 
 # Configs from YAML
 resume_path = config['model']['control_net_path']
-batch_size = config['training']['batch_size']
+# batch_size = config['training']['batch_size']
+batch_size = 2
 logger_freq = config['training']['logger_freq']
 learning_rate = config['model']['learning_rate']
 sd_locked = config['model']['sd_locked']
@@ -95,8 +96,9 @@ print('Start PyTorch Lightning part')
 
 # Trainer setup
 trainer = pl.Trainer(
-    devices=config['trainer']['devices'], 
+    # devices=config['trainer']['devices'], 
     callbacks=[logger, checkpoint_cb], 
+    devices=[0,1],
     accumulate_grad_batches=config['trainer']['accumulate_grad_batches'], 
     accelerator=config['trainer']['accelerator'],
     max_epochs=config['trainer']['max_epochs'], 
